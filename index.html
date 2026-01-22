@@ -5,81 +5,115 @@
 <title>ผังโต๊ะงาน Goodbye</title>
 
 <style>
-  body {
-    font-family: sans-serif;
-    text-align: center;
-  }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 30px;
+  background: linear-gradient(135deg, #ff758c, #845ec2);
+  color: #222;
+}
 
-  .stage {
-  width: 60%;
-  max-width: 600px;
-  height: 70px;
+/* กล่องหลัก */
+.container {
+  background: #ffffffee;
+  max-width: 900px;
+  margin: auto;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
 
-  margin: 20px auto 40px auto;
-
-  background: linear-gradient(135deg, #2c2c2c, #555);
+/* เวที */
+.stage {
+  width: 70%;
+  max-width: 700px;
+  height: 90px;
+  margin: 20px auto 50px auto;
+  background: linear-gradient(135deg, #111, #444);
   color: white;
-
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
-  letter-spacing: 1px;
-
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
 
-  border-radius: 14px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-  }
+/* แถว */
+.row {
+  margin-bottom: 30px;
+}
 
-  .row {
-    margin-bottom: 25px;
-  }
+.row-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
 
-  .row-title {
-    font-weight: bold;
-    margin-bottom: 8px;
-  }
+/* โต๊ะ */
+.tables {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
 
-  .hint {
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 8px;
-  }
+button {
+  width: 75px;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  background: #4CAF50;
+  color: white;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
 
-  .tables {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
+button:hover {
+  transform: translateY(-3px);
+  background: #43a047;
+}
 
-  button {
-    width: 70px;
-    height: 45px;
-    cursor: pointer;
-  }
+/* โต๊ะที่จองแล้ว */
+.booked {
+  background: #e53935;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 
-  .booked {
-    background-color: red;
-    color: white;
-    cursor: not-allowed;
-  }
+.booked:hover {
+  transform: none;
+}
+
+/* ช่องกรอกชื่อ */
+input {
+  padding: 10px;
+  width: 250px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  margin-bottom: 20px;
+}
 </style>
 </head>
+
 <body>
+<div class="container">
 
-<h2>ผังโต๊ะจีนงาน Goodbye</h2>
+<h2>🎉 ผังโต๊ะจีนงาน Goodbye 🎉</h2>
 
-ชื่อผู้จอง:
-<input type="text" id="name"><br><br>
+ชื่อผู้จอง:<br>
+<input type="text" id="name" placeholder="พิมพ์ชื่อของคุณ">
 
-<!-- เวที -->
-<div class="stage">
-  🎤 เวที (Stage)
-</div>
+<div class="stage">🎤 เวที (Stage)</div>
 
 <div id="layout"></div>
+
+</div>
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw3hbLYmjgHkKSB5o9u5r7U4kyn3LUbQzz1Oqu_Am4-YQUVVq5n0BYEZKqwIJ1gD8dlPg/exec";
@@ -114,15 +148,6 @@ function renderLayout() {
     title.className = "row-title";
     title.textContent = `แถว ${row}`;
     rowDiv.appendChild(title);
-
-    // ใบ้ระยะจากเวที
-    //const hint = document.createElement("div");
-    //hint.className = "hint";
-    //hint.textContent =
-      //row === "A" ? "ใกล้เวที" :
-      //row === "D" ? "ไกลเวที" :
-      //"ระยะกลาง";
-    //rowDiv.appendChild(hint);
 
     const tablesDiv = document.createElement("div");
     tablesDiv.className = "tables";
@@ -160,7 +185,7 @@ function bookTable(table, btn) {
   .then(res => res.text())
   .then(result => {
     if (result === "SUCCESS") {
-      alert("จองสำเร็จ 🎉");
+      alert("🎉 จองสำเร็จ!");
       btn.classList.add("booked");
       btn.disabled = true;
     } else if (result === "TABLE_BOOKED") {
