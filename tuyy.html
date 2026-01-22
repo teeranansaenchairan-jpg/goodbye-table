@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ผังโต๊ะงาน Goodbye</title>
+
+<style>
+  body {
+    font-family: sans-serif;
+    text-align: center;
+    padding: 10px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  input {
+    font-size: 16px;
+    padding: 8px;
+    width: 80%;
+    max-width: 300px;
+  }
+
+  /* เวที */
+  .stage {
+    width: 90%;
+    max-width: 600px;
+    height: 80px;
+
+    margin: 20px auto 40px auto;
+
+    background: linear-gradient(135deg, #2c2c2c, #555);
+    color: white;
+
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  }
+
+  .row {
+    margin-bottom: 28px;
+  }
+
+  .row-title {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .tables {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    width: 72px;
+    height: 52px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    background: #eaeaea;
+  }
+
+  button:hover:not(.booked) {
+    background: #d5d5d5;
+  }
+
+  .booked {
+    background-color: #e53935;
+    color: white;
+    cursor: not-allowed;
+  }
+
+  /* ปรับเพิ่มสำหรับมือถือเล็ก */
+  @media (max-width: 600px) {
+    button {
+      width: 78px;
+      height: 56px;
+      font-size: 17px;
+    }
+
+    .stage {
+      font-size: 20px;
+      height: 70px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h2>ผังโต๊ะจีนงาน Goodbye</h2>
+
+ชื่อผู้จอง:<br>
+<input type="text" id="name"><br><br>
+
+<div class="stage">
+  🎤 เวที (Stage)
+</div>
+
+<div id="layout"></div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw3hbLYmjgHkKSB5o9u5r7U4kyn3LUbQzz1Oqu_Am4-YQUVVq5n0BYEZKqwIJ1gD8dlPg/exec";
+
+const layout = {
+  A: ["A1","A2","A3","A4","A5"],
+  B: ["B1","B2","B3","B4","B5"],
+  C: ["C1","C2","C3","C4","C5"],
+  D: ["D1","D2"]
+};
+
+let bookedTables = [];
+
+function loadBookedTables() {
+  fetch(SCRIPT_URL)
+    .then(res => res.json())
+    .then(data => {
+      bookedTables = data;
+      renderLayout();
+    });
+}
+
+function renderLayout() {
+  const container = document.getElementById("layout");
+  container.innerHTML = "";
+
+  for (const row in layout) {
+    const rowDiv = document.createElement("div");
+    rowDiv.className = "row";
+
+    const title = document.createElement("div");
+    title.className = "row-title";
+    title.textContent = `แถว ${row}`;
+    rowDiv.appendChild(title);
+
+    const tablesDiv = document.createElement("div");
+    tablesDiv.className = "tables";
+
+    layout[row].forEach(table => {
+      const btn = document.createElement("button");
+      btn.textContent = table;
+
+      if (bookedTables.includes(table)) {
+        btn.classList.add("booked");
+        btn.disabled = true;
+      } else {
+        btn.onclick = () => bookTable(table, btn);
+      }
+
+      tablesDiv.appendChild(btn);
+    });
+
+    rowDiv.appendChild(tablesDiv);
+    container.appendChild(rowDiv);
+  }
+}
+
+function bookTable(table, btn) {
+  const name = document.getElementById("name").value.trim();
+  if (!name) {
+    alert("กรุณาใส่ชื่อผู้จอง");
+    return;
+  }
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({ name, table })
+  })
+  .then(res => res.text())
+  .then(result => {
+    if (result === "SUCCESS") {
+      alert("จองสำเร็จ 🎉");
+      btn.classList.add("booked");
+      btn.disabled = true;
+    } else if (result === "TABLE_BOOKED") {
+      alert("โต๊ะนี้ถูกจองแล้ว");
+      loadBookedTables();
+    } else if (result === "ALREADY_BOOKED") {
+      alert("1 คนจองได้แค่ 1 โต๊ะ");
+    }
+  });
+}
+
+loadBookedTables();
+</script>
+
+</body>
+</html>
